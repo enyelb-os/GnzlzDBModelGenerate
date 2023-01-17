@@ -1,0 +1,21 @@
+PATH: src/@VAR{command.package.path}/@VAR{database.dialect.lowercase}/@VAR{database.name}/model/custom
+NAME: IC@VAR{table.name.camelcase}.java
+REPLACE:FALSE
+
+package  @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model.custom;
+
+import  @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model.@VAR{table.name.camelcase};
+
+public interface IC@VAR{table.name.camelcase} {
+
+    /*******************************************
+	 * @Example
+	 * public default <TypeData> nameMethod() {
+	 *      model = modelDB();
+     *      code ...
+	 * }
+	 *******************************************/
+
+    public @VAR{table.name.camelcase} modelDB();
+
+}

@@ -1,0 +1,17 @@
+PATH: src/@VAR{command.package.path}/@VAR{database.dialect.lowercase}/@VAR{database.name}/model
+NAME: @VAR{table.name.camelcase}.java
+REPLACE:FALSE
+
+package @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model;
+
+import  @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model.base.Base@VAR{table.name.camelcase};
+import  @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model.custom.IC@VAR{table.name.camelcase};
+
+public class @VAR{table.name.camelcase} extends Base@VAR{table.name.camelcase}<@VAR{table.name.camelcase}> implements IC@VAR{table.name.camelcase}{
+
+    @Override
+    public @VAR{table.name.camelcase} modelDB() {
+        return this;
+    }
+
+}

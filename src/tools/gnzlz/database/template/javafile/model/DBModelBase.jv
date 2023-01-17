@@ -1,0 +1,99 @@
+PATH: src/@VAR{command.package.path}/@VAR{database.dialect.lowercase}/@VAR{database.name}/model/base/
+NAME: Base@VAR{table.name.camelcase}.java
+REPLACE:TRUE
+
+package @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model.base;
+
+@FOR{table.extra.imports | import | index}
+    @VAR{import}
+@ENDFOR
+
+import @VAR{ArrayList.package}.@VAR{ArrayList.classname};
+import @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.@VAR{catalog.name.camelcase}@VAR{database.dialect};
+
+import @VAR{DBTable.package}.@VAR{DBTable.classname};
+import @VAR{DBModel.package}.@VAR{DBModel.classname};
+import @VAR{Select.package}.@VAR{Select.classname};
+
+@FOR{table.allColumnsImports | column | index}
+    import @VAR{command.package}.@VAR{database.dialect.lowercase}.@VAR{database.name}.model.@VAR{column.table.name.camelcase};
+@ENDFOR
+
+public class Base@VAR{table.name.camelcase}<Type extends @VAR{DBModel.classname}<Type>> extends @VAR{DBModel.classname}<@VAR{table.name.camelcase}> {
+
+    public static final String TABLE = "@VAR{table.name}";
+    @FOR{table.columns | column | index}
+        public static final String @VAR{column.name.uppercase} = "@VAR{column.name}";
+    @ENDFOR
+
+    private static final @VAR{DBTable.classname} DBTABLE = @VAR{DBTable.classname}.create()
+        .addConfiguration(@VAR{catalog.name.camelcase}@VAR{database.dialect}.class)
+        .addTable(TABLE)@IF{@VAR{table.primaryKey} != null} .addPrimaryKey(@VAR{table.primaryKey.name.uppercase}) @ENDIF
+        @IF{!@VAR{table.columns.empty} != null} .addColumns(@FOR{table.columns | column | index} @VAR{column.name.uppercase} @IF{@VAR{index} != @VAR{table.columns.size()} - 1},@ENDIF @ENDFOR) @ENDIF
+        @FOR{table.columns | column | index}
+            @FOR{column.hasOne | relation | index}
+                .addHasOne(@VAR{column.name.uppercase}, @VAR{relation.pkColumn.table.name.camelcase}.class, @VAR{relation.pkColumn.tableColumnUpperCase()})
+            @ENDFOR
+        @ENDFOR
+        @FOR{table.columns | column | index}
+            @FOR{column.hasMany | relation | index}
+                .addHasMany(@VAR{column.name.uppercase}, @VAR{relation.fkColumn.table.name.camelcase}.class, @VAR{relation.fkColumn.tableColumnUpperCase()})
+            @ENDFOR
+        @ENDFOR
+        @FOR{table.columns | column | index}
+            @FOR{column.belongsToManys | relation | index}
+                .addBelongsToMany(@VAR{relation.relation1.pkColumn.name.uppercase}, @VAR{relation.relation1.fkColumn.tableColumnUpperCase()}, @VAR{relation.relation1.fkColumn.table.nameCamelCaseClass()}, @VAR{relation.relation2.fkColumn.tableColumnUpperCase()}, @VAR{relation.relation2.pkColumn.table.nameCamelCaseClass()}, @VAR{relation.relation2.pkColumn.tableColumnUpperCase()})
+            @ENDFOR
+        @ENDFOR;
+
+    public Base@VAR{table.name.camelcase}() {
+        super(DBTABLE);
+    }
+    @FOR{table.columns | column | index}
+
+        public @VAR{column.type.typeData} @VAR{column.name.lowercamelcase}() {
+            return get(@VAR{column.name.uppercase}).@VAR{column.type.typeValue}
+        }
+
+        public Type @VAR{column.name.lowercamelcase}(@VAR{column.type.typeData} @VAR{column.name.lowercamelcase}) {
+            set(@VAR{column.name.uppercase}, @VAR{column.name.lowercamelcase});
+            return (Type) this;
+        }
+
+        @IF{ @VAR{column.type.isDate} }
+            public Type @VAR{column.name.lowercamelcase}(String @VAR{column.name.lowercamelcase}){
+                set(@VAR{column.name.uppercase}, this.dateParse(@VAR{column.name.lowercamelcase}));
+                return (Type) this;
+            }
+
+        @ENDIF
+    @ENDFOR
+
+    public static @VAR{table.name.camelcase} find(Object primaryKey) {
+        return @VAR{table.name.camelcase}.find(@VAR{table.name.camelcase}.class, DBTABLE, primaryKey);
+    }
+
+    public static @VAR{table.name.camelcase} find(String column, Object value) {
+        return @VAR{table.name.camelcase}.find(@VAR{table.name.camelcase}.class, DBTABLE, column, value);
+    }
+
+    public static @VAR{ArrayList.classname}<@VAR{table.name.camelcase}> find(Object ... primaryKeys) {
+        return @VAR{table.name.camelcase}.findIn(@VAR{table.name.camelcase}.class, DBTABLE, primaryKeys);
+    }
+
+    public static @VAR{ArrayList.classname}<@VAR{table.name.camelcase}> find(String column,Object ... values) {
+        return @VAR{table.name.camelcase}.findIn(@VAR{table.name.camelcase}.class, DBTABLE, column, values);
+    }
+
+    public static @VAR{ArrayList.classname}<@VAR{table.name.camelcase}> findAll(String column,Object value) {
+        return @VAR{table.name.camelcase}.findAll(@VAR{table.name.camelcase}.class, DBTABLE, column, value);
+    }
+
+    public static @VAR{ArrayList.classname}<@VAR{table.name.camelcase}> list() {
+        return @VAR{table.name.camelcase}.all(@VAR{table.name.camelcase}.class, DBTABLE);
+    }
+
+    public static @VAR{Select.classname}<@VAR{table.name.camelcase}> selects() {
+        return @VAR{table.name.camelcase}.select(@VAR{table.name.camelcase}.class, DBTABLE);
+    }
+}

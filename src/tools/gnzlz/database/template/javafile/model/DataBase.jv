@@ -1,0 +1,38 @@
+PATH: src/@VAR{command.package.path}/@VAR{database.dialect.lowercase}/@VAR{database.name}
+NAME: @VAR{catalog.name.camelcase}@VAR{database.dialect}.java
+REPLACE:FALSE
+
+package @VAR{command.package.path}.@VAR{database.dialect.lowercase}.@VAR{database.name};
+
+import @VAR{DBConfiguration.package}.@VAR{DBConfiguration.classname};
+import @VAR{PropertiesConnection.package}.@VAR{PropertiesConnection.classname};
+import @VAR{PropertiesMigration.package}.@VAR{PropertiesMigration.classname};
+import @VAR{PropertiesModel.package}.@VAR{PropertiesModel.classname};
+
+public class @VAR{catalog.name.camelcase}@VAR{database.dialect} extends DBConfiguration {
+
+    @Override
+    protected void initConnection(PropertiesConnection connection) {
+        connection
+            .dialect(@VAR{database.dialect})
+            .protocol("jdbc:@VAR{database.dialect.lowercase}:")
+            .host("@VAR{database.host}")
+            .port(@VAR{database.port})
+            .user("@VAR{database.user}")
+            .password("@VAR{database.password}")
+            .name("@VAR{catalog.name}")
+            .property("useSSL","false")
+            .property("serverTimezone","UTC");
+    }
+
+    @Override
+    protected void initMigration(PropertiesMigration migration) {
+
+    }
+
+    @Override
+    protected void initModel(PropertiesModel model) {
+        model
+            .refresh(false);
+    }
+}
